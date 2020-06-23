@@ -1,0 +1,38 @@
+service:
+  name: asg
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-offline
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+
+functions:
+  flagNodes:
+    handler: handler.flagNodes
+    events:
+      - http:
+          method: get
+          path: flagNodes
+      - schedule: cron(0 17 ? * FRI *)
+  descaleCluster:
+    handler: handler.descaleCluster
+    events:
+      - http:
+          method: get
+          path: descaleCluster
+      - schedule: cron(0 18 ? * FRI *)
